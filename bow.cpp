@@ -9,7 +9,7 @@
 
 using namespace cv;
 using namespace cv::xfeatures2d;
-int numBOF = 10;
+int numBOF = 20;
 
 /* @function main */
 int main( int argc, char** argv )
@@ -34,7 +34,6 @@ int main( int argc, char** argv )
 	//To store all the descriptors that are extracted from all the images.
 	Mat featuresUnclustered;
 
-
 	for (int i = 0; i < numBOF; i++)
 	{
 		clock_t start = clock();
@@ -55,5 +54,16 @@ int main( int argc, char** argv )
 			break;
 		}
 	}
+
+	int dictionarySize = 200;
+	TermCriteria tc(CV_TERMCRIT_ITER, 100.0, 0.001);
+	int retries = 1;
+	int flags = KMEANS_PP_CENTERS;
+	BOWKMeansTrainer bowTrainer(dictionarySize, tc, retries, flags);
+	Mat dictionary = bowTrainer.cluster(featuresUnclustered);
+	FileStorage fs("dictionary.yml", FileStorage::WRITE);
+	fs << "vocabulary" << dictionary;
+	fs.release();
+
 	return 0;
 }

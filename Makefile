@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/new/src/opencv_BOF
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -109,6 +109,19 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+#=============================================================================
+# Target rules for targets named compareBOF
+
+# Build rule for target.
+compareBOF: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 compareBOF
+.PHONY : compareBOF
+
+# fast build rule for target.
+compareBOF/fast:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/build
+.PHONY : compareBOF/fast
 
 #=============================================================================
 # Target rules for targets named bow
@@ -150,18 +163,49 @@ bow.cpp.s:
 	$(MAKE) -f CMakeFiles/bow.dir/build.make CMakeFiles/bow.dir/bow.cpp.s
 .PHONY : bow.cpp.s
 
+compareBOF.o: compareBOF.cpp.o
+
+.PHONY : compareBOF.o
+
+# target to build an object file
+compareBOF.cpp.o:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/compareBOF.cpp.o
+.PHONY : compareBOF.cpp.o
+
+compareBOF.i: compareBOF.cpp.i
+
+.PHONY : compareBOF.i
+
+# target to preprocess a source file
+compareBOF.cpp.i:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/compareBOF.cpp.i
+.PHONY : compareBOF.cpp.i
+
+compareBOF.s: compareBOF.cpp.s
+
+.PHONY : compareBOF.s
+
+# target to generate assembly for a file
+compareBOF.cpp.s:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/compareBOF.cpp.s
+.PHONY : compareBOF.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... edit_cache"
+	@echo "... compareBOF"
 	@echo "... bow"
 	@echo "... bow.o"
 	@echo "... bow.i"
 	@echo "... bow.s"
+	@echo "... compareBOF.o"
+	@echo "... compareBOF.i"
+	@echo "... compareBOF.s"
 .PHONY : help
 
 

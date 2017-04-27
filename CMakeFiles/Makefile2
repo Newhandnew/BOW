@@ -60,6 +60,43 @@ CMAKE_SOURCE_DIR = /home/new/src/opencv_BOF
 CMAKE_BINARY_DIR = /home/new/src/opencv_BOF
 
 #=============================================================================
+# Target rules for target CMakeFiles/compareBOF.dir
+
+# All Build rule for target.
+CMakeFiles/compareBOF.dir/all:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/depend
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/new/src/opencv_BOF/CMakeFiles --progress-num=3,4 "Built target compareBOF"
+.PHONY : CMakeFiles/compareBOF.dir/all
+
+# Include target in all.
+all: CMakeFiles/compareBOF.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/compareBOF.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/new/src/opencv_BOF/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/compareBOF.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/new/src/opencv_BOF/CMakeFiles 0
+.PHONY : CMakeFiles/compareBOF.dir/rule
+
+# Convenience name for target.
+compareBOF: CMakeFiles/compareBOF.dir/rule
+
+.PHONY : compareBOF
+
+# clean rule for target.
+CMakeFiles/compareBOF.dir/clean:
+	$(MAKE) -f CMakeFiles/compareBOF.dir/build.make CMakeFiles/compareBOF.dir/clean
+.PHONY : CMakeFiles/compareBOF.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/compareBOF.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/bow.dir
 
 # All Build rule for target.
