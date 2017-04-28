@@ -13,6 +13,8 @@ iostream
 -
 time.h
 -
+sstream
+-
 opencv2/core.hpp
 /home/new/src/opencv_BOF/opencv2/core.hpp
 opencv2/features2d.hpp
