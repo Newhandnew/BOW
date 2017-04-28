@@ -90,6 +90,7 @@ int main( int argc, char** argv )
     // matcher -> match(bowDescriptor, matches);
 	int best=0;
 	double minDist = 999999999;
+	double limitMinDist = 0.2;
 	for (size_t i=0; i<bowKeyFrame.size(); i++)
 	{
 	     double dist = norm(bowKeyFrame[i], bowDescriptor); //calc L2 distance
@@ -100,7 +101,21 @@ int main( int argc, char** argv )
 	     }
 	}
 
-	cout << best << endl << minDist << endl;
+	if(minDist < limitMinDist)
+	{
+		cout << "success: "<< best << ", minimum distance: " << minDist << endl;
+		imshow("camera", cameraFrame);
+		stringstream imgName;
+		imgName << imgDir << best << imgType;
+		Mat imgMatch;
+		imgMatch = imread(imgName.str(), CV_LOAD_IMAGE_COLOR);
+		imshow("match", imgMatch);
+		waitKey(0);
+	}
+	else
+	{
+		cout << "fail" << endl;
+	}
 
     // std::vector< std::vector<DMatch> > nn_matches;
     // matcher.knnMatch(bowDescriptor, nn_matches, 1);
