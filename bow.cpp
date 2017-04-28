@@ -15,6 +15,8 @@ using namespace std;
 int numBOF = 20;
 string imgDir = "imgEnv/";
 string imgType = ".jpg";
+int minHessian = 400;
+int dictionarySize = 200;
 
 /* @function main */
 int main( int argc, char** argv )
@@ -29,7 +31,6 @@ int main( int argc, char** argv )
 	namedWindow("video", 1);
 	Mat cameraFrame, imgGray;
 	//-- Step 1: Detect the keypoints using SURF Detector
-  	int minHessian = 400;
   	Mat imgKeypoints;
 
   	Ptr<SURF> detector = SURF::create( minHessian );
@@ -40,6 +41,7 @@ int main( int argc, char** argv )
 	Mat featuresUnclustered;
 	stringstream imgName;
 
+ 	vector<Mat> bowKeyFrame;
 	
 	for (int i = 0; i < numBOF; i++)
 	{
@@ -48,6 +50,7 @@ int main( int argc, char** argv )
 		cvtColor(cameraFrame, imgGray, COLOR_BGR2GRAY);
 		detector->detectAndCompute( imgGray, Mat(), keypoints, descriptor );
 		featuresUnclustered.push_back(descriptor);
+		bowKeyFrame.push_back(descriptor);		// save training data descriptor
 		clock_t end = clock();
 		float spendSeconds = (float)(end - start) / CLOCKS_PER_SEC;
 
@@ -57,7 +60,7 @@ int main( int argc, char** argv )
 		imgName << imgDir << i << imgType;
 		imwrite(imgName.str(), cameraFrame);
 
-		printf("%i percent done, time: %f \n", (i + 1) * 100 / numBOF, spendSeconds);
+		printf("%i percent done, time per image: %f \n", (i + 1) * 100 / numBOF, spendSeconds);
 		if(waitKey(30) == 27)
 		{
 			printf("exit");
@@ -65,7 +68,6 @@ int main( int argc, char** argv )
 		}
 	}
 
-	int dictionarySize = 200;
 	TermCriteria tc(CV_TERMCRIT_ITER, 100.0, 0.001);
 	int retries = 1;
 	int flags = KMEANS_PP_CENTERS;
@@ -74,9 +76,15 @@ int main( int argc, char** argv )
 	FileStorage fs("dictionary.yml", FileStorage::WRITE);
 	fs << "vocabulary" << dictionary;
 	fs.release();
-	FileStorage fTrainFeature("trainImgFeature.yml", FileStorage::WRITE);
-	fTrainFeature << "train image feature" << featuresUnclustered;
-	fTrainFeature.release();
+	// save keyframe descriptor
+	FileStorage fsKeyFrame("keyFrame.yml", FileStorage::WRITE);
+	for (int i = 0; i < numBOF; i++)
+	{
+		char tmpChar[10];
+		sprintf(tmpChar, "frame%d", i);
+		fsKeyFrame << tmpChar << bowKeyFrame[i];
+	}
+	fsKeyFrame.release();
 
 	return 0;
 }

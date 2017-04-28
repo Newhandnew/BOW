@@ -14,6 +14,7 @@ using namespace std;
 int numBOF = 20;
 string imgDir = "imgEnv/";
 string imgType = ".jpg";
+int minHessian = 400;
 
 int main( int argc, char** argv )
 {
@@ -34,7 +35,6 @@ int main( int argc, char** argv )
 	Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
     //create SURF feature point extracter
 
-    int minHessian = 400;
   	Ptr<SURF> detector = SURF::create( minHessian );
     //create Sift descriptor extractor
   	Ptr<SURF> extractor = SURF::create( minHessian );
@@ -44,40 +44,34 @@ int main( int argc, char** argv )
     //Set the dictionary with the vocabulary we created in the first step
 
     bowDE.setVocabulary(dictionary);
- 
- 	vector<Mat> bowKeyFrame;
-	Mat imgCurrent;
-	vector<KeyPoint> keypoints; 
-    Mat bowDescriptor;     
-    Mat test;   
-    //extract BoW (or BoF) descriptor from given image
-    // vector< vector<int> > pointIdxOfClusters;
 
-    for (int i = 0; i < numBOF; i++)
-    {
-    	stringstream imgName;
-		imgName << imgDir << i << imgType;
-		imgCurrent = imread(imgName.str(), CV_LOAD_IMAGE_GRAYSCALE);
-    	detector->detect(imgCurrent, keypoints);
-    	bowDE.compute(imgCurrent, keypoints, bowDescriptor);
-    	// cout << bowDescriptor.size() << endl;
-    	bowKeyFrame.push_back(bowDescriptor);
-    	// cout << bowDescriptor << endl;
-    	// test = bowDescriptor;
-    }
-    // cout << bowKeyFrame[0] << endl;
+    Mat bowDescriptor; 
+
+ 	vector<Mat> bowKeyFrame;
+ 	Mat temp;
+	FileStorage fsKeyFrame("keyFrame.yml", FileStorage::READ);
+	for (int i = 0; i < numBOF; i++)
+	{
+		char tmpChar[10];
+		sprintf(tmpChar, "frame%d", i);
+		fsKeyFrame[tmpChar] >> temp;
+		bowDE.compute(cameraFrame, keypoints, bowDescriptor)
+		bowKeyFrame.push_back(temp);
+	}
+	fsKeyFrame.release();
+
 
     //open the file to write the resultant descriptor
     FileStorage fs1("descriptor.yml", FileStorage::WRITE);    
 
-    // vector<KeyPoint> keypoints;        
+    vector<KeyPoint> keypoints;        
     //Detect SIFT keypoints (or feature points)
 	Mat cameraFrame, imgGray;
 	cap >> cameraFrame;
 	cvtColor(cameraFrame, imgGray, COLOR_BGR2GRAY);
     detector->detect(cameraFrame, keypoints);
     //To store the BoW (or BoF) representation of the image
-    // Mat bowDescriptor;        
+       
     //extract BoW (or BoF) descriptor from given image
     // vector< vector<int> > pointIdxOfClusters;
 
