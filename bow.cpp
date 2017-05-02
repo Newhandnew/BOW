@@ -15,11 +15,12 @@ using namespace std;
 int numBOF = 20;
 string imgDir = "imgEnv/";
 string imgType = ".jpg";
+char numCamera = 1;
 
 /* @function main */
 int main( int argc, char** argv )
 {
-	VideoCapture cap(0);
+	VideoCapture cap(numCamera);
 	if(cap.isOpened() != 1)
 	{
 		printf("error in capturincd g");
@@ -38,8 +39,22 @@ int main( int argc, char** argv )
   	Mat descriptor;
 	//To store all the descriptors that are extracted from all the images.
 	Mat featuresUnclustered;
-	stringstream imgName;
 
+	cout << "press 't' to train" << endl;
+	while(1) 
+	{
+		char key = waitKey(100);
+		if(key == 27)
+		{
+			cout << "exit" << endl;
+			return 0;
+		}
+		else if (key == 116)   // "t"
+		{
+			cout << "start to capture..." << endl;
+			break;
+		}
+	}
 	
 	for (int i = 0; i < numBOF; i++)
 	{
@@ -54,13 +69,14 @@ int main( int argc, char** argv )
 		drawKeypoints( cameraFrame, keypoints, imgKeypoints, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
 		imshow("video", imgKeypoints);
 
+		stringstream imgName;
 		imgName << imgDir << i << imgType;
 		imwrite(imgName.str(), cameraFrame);
 
-		printf("%i percent done, time: %f \n", (i + 1) * 100 / numBOF, spendSeconds);
-		if(waitKey(30) == 27)
+		cout << (i + 1) * 100 / numBOF << " percent done, time: " << spendSeconds << ", file name: " << imgName.str() << endl;
+		if(waitKey(100) == 27)
 		{
-			printf("exit");
+			cout << "exit" << endl;
 			break;
 		}
 	}

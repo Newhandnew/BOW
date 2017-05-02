@@ -14,16 +14,17 @@ using namespace std;
 int numBOF = 20;
 string imgDir = "imgEnv/";
 string imgType = ".jpg";
+char numCamera = 1;
 
 int main( int argc, char** argv )
 {
-	VideoCapture cap(0);
+	VideoCapture cap(numCamera);
 	if(cap.isOpened() != 1)
 	{
 		printf("error in capturincd g");
 		return -1;
 	}
-
+	namedWindow("camera", 1);
 	Mat dictionary; 
     FileStorage fs("dictionary.yml", FileStorage::READ);
     fs["vocabulary"] >> dictionary;
@@ -60,71 +61,74 @@ int main( int argc, char** argv )
 		imgCurrent = imread(imgName.str(), CV_LOAD_IMAGE_GRAYSCALE);
     	detector->detect(imgCurrent, keypoints);
     	bowDE.compute(imgCurrent, keypoints, bowDescriptor);
-    	// cout << bowDescriptor.size() << endl;
     	bowKeyFrame.push_back(bowDescriptor);
-    	// cout << bowDescriptor << endl;
-    	// test = bowDescriptor;
     }
-    // cout << bowKeyFrame[0] << endl;
 
     //open the file to write the resultant descriptor
     FileStorage fs1("descriptor.yml", FileStorage::WRITE);    
-
-    // vector<KeyPoint> keypoints;        
-    //Detect SIFT keypoints (or feature points)
-	Mat cameraFrame, imgGray;
-	cap >> cameraFrame;
-	cvtColor(cameraFrame, imgGray, COLOR_BGR2GRAY);
-    detector->detect(cameraFrame, keypoints);
-    //To store the BoW (or BoF) representation of the image
-    // Mat bowDescriptor;        
-    //extract BoW (or BoF) descriptor from given image
-    // vector< vector<int> > pointIdxOfClusters;
-
-    bowDE.compute(cameraFrame, keypoints, bowDescriptor);
-    //write the new BoF descriptor to the file
     fs1 << "test" << bowDescriptor;        
     fs1.release();
 
-    // vector<DMatch> matches;
-    // matcher -> match(bowDescriptor, matches);
-	int best=0;
-	double minDist = 999999999;
-	double limitMinDist = 0.2;
-	for (size_t i=0; i<bowKeyFrame.size(); i++)
-	{
-	     double dist = norm(bowKeyFrame[i], bowDescriptor); //calc L2 distance
-	     if (dist < minDist) // keep the one with smallest distance
-	     {
-	          minDist = dist;
-	          best = i;
-	     }
-	}
+	Mat cameraFrame, imgGray;
+	double limitMinDist = 0.12;		// need to be discussed
 
-	if(minDist < limitMinDist)
+	cout << "press 't' to test image" << endl;
+	while(1) 
 	{
-		cout << "success: "<< best << ", minimum distance: " << minDist << endl;
-		imshow("camera", cameraFrame);
-		stringstream imgName;
-		imgName << imgDir << best << imgType;
-		Mat imgMatch;
-		imgMatch = imread(imgName.str(), CV_LOAD_IMAGE_COLOR);
-		imshow("match", imgMatch);
-		waitKey(0);
-	}
-	else
-	{
-		cout << "fail" << endl;
-	}
+		char key = waitKey(100);
+		if(key == 27)
+		{
+			cout << "exit" << endl;
+			return 0;
+		}
+		else if (key == 116)   // "t"
+		{
+			cout << "start to test..." << endl;
+			clock_t start = clock();
+			cap >> cameraFrame;
+			cvtColor(cameraFrame, imgGray, COLOR_BGR2GRAY);
+		    detector->detect(cameraFrame, keypoints);
+		    clock_t tSURFEnd = clock();
+		    float spendSeconds = (float)(tSURFEnd - start) / CLOCKS_PER_SEC;
+		    cout << "SURF time: " << spendSeconds << endl;
+		    //To store the BoW (or BoF) representation of the image
+		    // Mat bowDescriptor;        
+		    //extract BoW (or BoF) descriptor from given image
+		    // vector< vector<int> > pointIdxOfClusters;
 
-    // std::vector< std::vector<DMatch> > nn_matches;
-    // matcher.knnMatch(bowDescriptor, nn_matches, 1);
-    // cout << matches.size() << endl << matches[0].imgIdx << endl;
-    // cout << matches[0].trainIdx << endl << matches[1].trainIdx << endl << matches[2].trainIdx << endl << matches[2].trainIdx << endl;
-    // std::cout << nn_matches.size() << std::endl;
-   //  for (int i=0; i<pointIdxOfClusters.size();i++){
-   //  	cout << pointIdxOfClusters[1][i] << endl;
- 	 // }
+		    bowDE.compute(cameraFrame, keypoints, bowDescriptor);
+		    clock_t tBOWEnd = clock();
+		    spendSeconds = (float)(tBOWEnd - tSURFEnd) / CLOCKS_PER_SEC;
+		    cout << "BOW compute time: " << spendSeconds << endl;
+	    	int best=0;
+			double minDist = 999999999;
+			for (size_t i=0; i<bowKeyFrame.size(); i++)
+			{
+			     double dist = norm(bowKeyFrame[i], bowDescriptor); //calc L2 distance
+			     if (dist < minDist) // keep the one with smallest distance
+			     {
+			          minDist = dist;
+			          best = i;
+			     }
+			}
 
+			if(minDist < limitMinDist)
+			{
+				clock_t end = clock();
+				spendSeconds = (float)(end - start) / CLOCKS_PER_SEC;
+				cout << "success: "<< best << ", minimum distance: " << minDist << ", spend time: " << spendSeconds << endl;
+				imshow("camera", cameraFrame);
+				stringstream imgName;
+				imgName << imgDir << best << imgType;
+				Mat imgMatch;
+				imgMatch = imread(imgName.str(), CV_LOAD_IMAGE_COLOR);
+				imshow("match", imgMatch);
+			}
+			else
+			{
+				cout << "fail" << endl;
+			}
+		}
+	}
 
 }
