@@ -70,7 +70,7 @@ int main( int argc, char** argv )
     fs1.release();
 
 	Mat cameraFrame, imgGray;
-	double limitMinDist = 0.12;		// need to be discussed
+	double limitMinDist = 0.15;		// need to be discussed
 
 	cout << "press 't' to test image" << endl;
 	while(1) 
@@ -126,7 +126,7 @@ int main( int argc, char** argv )
 			}
 			else
 			{
-				cout << "fail" << endl;
+				cout << "fail" << " minimum distance: " << minDist << endl;
 			}
 		}
 	}

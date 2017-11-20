@@ -1,4 +1,0 @@
-/home/new/src/opencv_BOF/CMakeFiles/rebuild_cache.dir
-/home/new/src/opencv_BOF/CMakeFiles/edit_cache.dir
-/home/new/src/opencv_BOF/CMakeFiles/compareBOF.dir
-/home/new/src/opencv_BOF/CMakeFiles/bow.dir
